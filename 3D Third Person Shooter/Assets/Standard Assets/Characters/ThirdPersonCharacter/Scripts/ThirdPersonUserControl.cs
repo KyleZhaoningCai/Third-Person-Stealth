@@ -1,3 +1,10 @@
+/* Source File Name: ThirdPersonUserControl.cs
+ * Author's Name: Zhaoning Cai
+ * Last Modified on: Dec 4, 2015
+ * Program Description: Third Person Stealth Game. Player escapes the dungeon to win
+ * the level. The player needs to solve puzzles and avoid/deactivate enemies
+ * Revision History: Final Version
+ */
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
@@ -33,12 +40,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         }
 
 
-        private void Update()
-        {
-            if (!m_Jump)
-            {
-                m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
-            }
+        private void Update(){
         }
 
 
@@ -48,7 +50,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             // read inputs
             float h = CrossPlatformInputManager.GetAxis("Horizontal");
             float v = CrossPlatformInputManager.GetAxis("Vertical");
-            bool crouch = Input.GetKey(KeyCode.C);
+			bool crouch = false;
 
             // calculate move direction to pass to character
             if (m_Cam != null)

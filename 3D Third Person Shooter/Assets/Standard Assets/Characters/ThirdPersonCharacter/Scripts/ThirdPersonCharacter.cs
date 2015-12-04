@@ -1,3 +1,11 @@
+/* Source File Name: ThirdPersonCharacter.cs
+ * Author's Name: Zhaoning Cai
+ * Last Modified on: Dec 4, 2015
+ * Program Description: Third Person Stealth Game. Player escapes the dungeon to win
+ * the level. The player needs to solve puzzles and avoid/deactivate enemies
+ * Revision History: Final Version
+ */
+using System;
 using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
@@ -49,6 +57,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			// convert the world relative moveInput vector into a local-relative
 			// turn amount and forward amount required to head in the desired
 			// direction.
+			crouch = false;
 			if (move.magnitude > 1f) move.Normalize();
 			move = transform.InverseTransformDirection(move);
 			CheckGroundStatus();
@@ -68,8 +77,6 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				HandleAirborneMovement();
 			}
 
-			ScaleCapsuleForCrouching(crouch);
-			PreventStandingInLowHeadroom();
 
 			// send input and other state parameters to the animator
 			UpdateAnimator(move);
