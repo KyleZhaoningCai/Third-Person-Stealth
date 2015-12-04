@@ -33,6 +33,9 @@ public class EnemyAI : MonoBehaviour {
 	private Collider smallCollider;
 	private Collider[] colliders;
 	private AudioSource clip;
+	private bool attacking = false;
+	private float attackTimer = 3f;
+	private float attackWait = 3f;
 
 	void Awake(){
 		// References and Set Default Values;
@@ -53,7 +56,15 @@ public class EnemyAI : MonoBehaviour {
 		// the player, check to see if the chase timer becomes equal or less than 0, the
 		// enemy should stop chasing the player and go back to patrolling, otherwise, the
 		// enemy should continue chasing the player
+		if (this.attacking) {
+			this.attackTimer -= Time.deltaTime;
+			if (this.attackTimer <= 0){
+				attackTimer = attackWait;
+				this.ContinueAction();
+				this.attacking = false;
+			}
 
+		}
 		if (this.killTimer <= 0) {
 			Shooting ();
 
@@ -78,7 +89,7 @@ public class EnemyAI : MonoBehaviour {
 		nav.Stop ();
 		Instantiate (_particleSystem, playerObject.transform.position, Quaternion.identity);
 		this._animator.SetInteger("AnimeState", 1);
-
+		this.attacking = true;
 	}
 
 	// The enemy moves towards the player

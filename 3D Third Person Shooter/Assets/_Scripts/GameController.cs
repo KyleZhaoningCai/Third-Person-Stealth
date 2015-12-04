@@ -194,9 +194,10 @@ public class GameController : MonoBehaviour {
 		this.gameOver = true;
 		for (int i = 0; i < playerRenderer.Length; i++) {
 			playerRenderer[i].enabled = false;
-			Instantiate(this.explosion, player.transform.position, Quaternion.identity);
-			clips[0].Play ();
+
 		}
+		Instantiate(this.explosion, player.transform.position, Quaternion.identity);
+		clips[0].Play ();
 		this.infoLabel.text = "Game Over\nPress Any Key to Restart";
 	}
 
