@@ -29,14 +29,36 @@ public class GameController : MonoBehaviour {
 	private float displayTimer = 2f;
 	private bool displaying = false;
 	private AudioSource[] clips;
+	private bool hasAxe = false;
+	private bool hasSleepingPill = false;
+	private bool hasPoison = false;
+	private bool hasWater = false;
+	private bool hasEmptyBottle = false;
+	private bool hasWine = false;
+	private float cooldown = 0.5f;
+	private bool offCooldown = true;
+	private Transform chandelierTransform;
+	private string currentStatus = "";
+	private float gameOverCountDown = 2.5f;
+	private bool delayGameOver = false;
+
 
 	// Public References ++++++++++++++++++++++++++++++++
 	public GameObject explosion;
 	public GameObject gate;
 	public Text lifeLabel;
 	public Text infoLabel;
+	public GameObject chandelierExplosion;
+	public GameObject chandelierEnemyExplosion;
+	public Transform wayPointHuman;
+	public Transform wayPointTargetEnemy;
 
 	// Public Read-Only
+	public bool _GameOver{
+		get {
+			return this.gameOver;
+		}
+	}
 	public bool _HasKey {
 		get {
 			return this.hasKey;
@@ -77,6 +99,54 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	public bool _HasAxe {
+		get {
+			return this.hasAxe;
+		}
+	}
+	
+	public bool _HasSleepingPill {
+		get {
+			return this.hasSleepingPill;
+		}
+	}
+	
+	public bool _HasPoison {
+		get {
+			return this.hasPoison;
+		}
+	}
+	
+	public bool _HasWater {
+		get {
+			return this.hasWater;
+		}
+	}
+	
+	public bool _HasEmptyBottle{
+		get {
+			return this.hasEmptyBottle;
+		}
+	}
+	
+	public bool _HasWine {
+		get {
+			return this.hasWine;
+		}
+	}
+
+	public bool _OffCooldown {
+		get {
+			return this.offCooldown;
+		}
+	}
+	
+	public string _CurrentStatus {
+		get {
+			return this.currentStatus;
+		}
+	}
+
 	// Use this for initialization
 	void Start () {
 		hasKey = false;
@@ -90,23 +160,37 @@ public class GameController : MonoBehaviour {
 		player = GameObject.FindGameObjectWithTag ("Player");
 		playerRenderer = player.GetComponentsInChildren<Renderer> ();
 		clips = gameObject.GetComponents<AudioSource> ();
-
+		chandelierTransform = GameObject.FindGameObjectWithTag ("Chandelier").GetComponent<Transform> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		// If the game is over, allow player to press any key to restart
 		if (gameOver) {
-			if (Input.anyKeyDown){
-				Application.LoadLevel(0);
-				gameOver = false;
+			if (this.offCooldown)
+			{
+				if (Input.anyKeyDown){
+					Application.LoadLevel(Application.loadedLevel);
+					gameOver = false;
+				}
+			}else{
+				this.ActionCoolDown();
 			}
 		}
+	
 		// If the info text is displaying, delete the text after two seconds
 		if (this.displaying) {
 			this.displayTimer -= Time.deltaTime;
 			if(this.displayTimer <= 0){
 				ClearInfoText();
+			}
+		}
+
+		if (delayGameOver) {
+			this.gameOverCountDown -= Time.deltaTime;
+			if (this.gameOverCountDown <= 0){
+				this.GameOver("You Missed Your Chance to Escape");
+				this.delayGameOver = false;
 			}
 		}
 	}
@@ -142,7 +226,7 @@ public class GameController : MonoBehaviour {
 		lives -= 1;
 		this.UpdateLifeLabel();
 		if (this.lives <= 0) {
-			this.GameOver();
+			this.GameOver("Game Over\nPress Any Key to Restart");
 		}
 	}
 
@@ -190,15 +274,16 @@ public class GameController : MonoBehaviour {
 	}
 
 	// Game is over, hide the player and set info text
-	void GameOver(){
+	public void GameOver(string text){
 		this.gameOver = true;
 		for (int i = 0; i < playerRenderer.Length; i++) {
 			playerRenderer[i].enabled = false;
-
 		}
 		Instantiate(this.explosion, player.transform.position, Quaternion.identity);
-		clips[0].Play ();
-		this.infoLabel.text = "Game Over\nPress Any Key to Restart";
+		this.clips [0].Play ();
+		this.displayTimer = 1000f;
+		this.EnterCoolDown();
+		this.infoLabel.text = text;
 	}
 
 	// Clear the info text
@@ -216,5 +301,65 @@ public class GameController : MonoBehaviour {
 	// Play the key pick up sound
 	public void PlayKeySound(){
 		this.clips [1].Play ();
+	}
+
+	public void ObtainEmptyBottle(){
+		this.hasEmptyBottle = true;
+	}
+	public void BottleUpSleepingPill(){
+		this.hasSleepingPill = true;
+		this.hasPoison = false;
+		this.hasWater = false;
+	}
+	public void BottleUpPoison(){
+		this.hasSleepingPill = false;
+		this.hasPoison = true;
+		this.hasWater = false;
+	}
+	public void BottleUpWater(){
+		this.hasSleepingPill = false;
+		this.hasPoison = false;
+		this.hasWater = true;
+	}
+	public void ActionCoolDown(){
+		this.cooldown -= Time.deltaTime;
+		if (this.cooldown <= 0){
+			this.offCooldown = true;
+			this.cooldown = 0.5f;
+		}
+	}
+	public void EnterCoolDown(){
+		this.offCooldown = false;
+	}
+
+	public void ObtainWine(){
+		this.hasWine = true;
+	}
+
+	public void LoseWine(){
+		this.hasWine = false;
+	}
+
+	public void PickUpAxe(){
+		this.hasAxe = true;
+	}
+	public void ChandelierExplode(bool isEnemy){
+		if (isEnemy) {
+			Instantiate (this.chandelierEnemyExplosion, this.chandelierTransform.position, Quaternion.identity);
+		} else {
+			Instantiate (this.chandelierExplosion, this.chandelierTransform.position, Quaternion.identity);
+		}
+	}
+	public void SetTarget(Vector3 position){
+		this.wayPointHuman.position = position;
+	}
+	public void SetCurrentStatus(string status){
+		this.currentStatus = status;
+	}
+	public void WakeUp(Vector3 position){
+		this.wayPointTargetEnemy.position = position;
+	}
+	public void DelayGameOver(){
+		this.delayGameOver = true;
 	}
 }

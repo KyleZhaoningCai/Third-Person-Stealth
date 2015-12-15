@@ -57,7 +57,7 @@ public class SceneFadeInOut : MonoBehaviour {
 		FadeToBlack ();
 
 		if (_guiTexture.color.a >= 0.95f) {
-			Application.LoadLevel(0);
+			Application.LoadLevel(1);
 		}
 
 	}
