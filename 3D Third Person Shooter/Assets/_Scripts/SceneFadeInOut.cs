@@ -12,6 +12,7 @@ public class SceneFadeInOut : MonoBehaviour {
 
 	// Public Instance Variables +++++++++++++++++++++++++++
 	public float fadeSpeed = 1.5f;
+	public int nextLevel = 1;
 
 	// Private Instance Variables ++++++++++++++++++++++++++
 	private bool sceneStarting = true;
@@ -57,7 +58,7 @@ public class SceneFadeInOut : MonoBehaviour {
 		FadeToBlack ();
 
 		if (_guiTexture.color.a >= 0.95f) {
-			Application.LoadLevel(1);
+			Application.LoadLevel(this.nextLevel);
 		}
 
 	}

@@ -42,7 +42,7 @@ public class Deactivate : MonoBehaviour {
 				smallCollider.enabled = true;
 				navMeshAgent.Stop();
 				this._animator.SetInteger("AnimeState", 2);
-				this.gameController.infoLabel.text = "You Used Deactivation Terminal\nEnemy Not Affected If Attacking";
+				this.gameController.infoLabel.text = "You Used Deactivation Terminal\nYou Can't Deactivate Attacking Enemy";
 				this.gameController.Displaying();
 
 

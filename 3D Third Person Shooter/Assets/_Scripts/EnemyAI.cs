@@ -36,6 +36,7 @@ public class EnemyAI : MonoBehaviour {
 	private bool attacking = false;
 	private float attackTimer = 3f;
 	private float attackWait = 3f;
+	private GameObject[] enemies;
 
 	void Awake(){
 		// References and Set Default Values;
@@ -47,6 +48,7 @@ public class EnemyAI : MonoBehaviour {
 		colliders [1].enabled = false;
 		chasing = false;
 		clip = gameObject.GetComponent<AudioSource> ();
+		this.enemies = GameObject.FindGameObjectsWithTag ("Enemy");
 	}
 
 	void Update(){
@@ -60,8 +62,10 @@ public class EnemyAI : MonoBehaviour {
 			this.attackTimer -= Time.deltaTime;
 			if (this.attackTimer <= 0){
 				attackTimer = attackWait;
+
 				this.ContinueAction();
 				this.attacking = false;
+				
 			}
 
 		}

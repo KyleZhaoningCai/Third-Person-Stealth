@@ -19,6 +19,7 @@ public class PickUpEmptyBottle : MonoBehaviour {
 	void OnTriggerStay(Collider other){
 		if (other.CompareTag ("Player")) {
 			if (CrossPlatformInputManager.GetButtonDown("Fire1")){
+				this.gameController.PlayKeySound();
 				this.gameController.ObtainEmptyBottle();
 				this.gameController.infoLabel.text = "You Picked Up\nan Empty Bottle";
 				this.gameController.Displaying();
